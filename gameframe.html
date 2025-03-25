@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Frame</title>
+    <meta name="robots" content="max-image-preview:large">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="manifest" href="/manifest">
+    <link rel="canonical" href="https://www.example.com/game/your-game-name">
+    <style>
+       body {
+            margin: 0;
+            font-family: 'Nunito', Arial, sans-serif;
+            background-color: #0C0D14;
+            color: #F9FAFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            background-color: rgba(33, 34, 51, 0.9);
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
+            overflow: hidden;
+            width: 95%;
+            max-width: 1300px;
+            margin-bottom: 20px;
+            transition: box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 20px;
+        }
+
+        .game-container:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
+        }
+
+        .game-iframe {
+            width: 100%;
+            height: 650px;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            background-color: #fff;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between; /* Changed from flex-end to space-between */
+            align-items: center;
+            padding: 10px;
+            background-color: rgba(33, 34, 51, 0.9);
+            border-top: 1px solid #333;
+        }
+
+        .game-title-name {
+            color: #fff;
+            margin-right: auto; /* Push title to the left */
+            margin-left: 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .game-controls button {
+            color: #EFF0F7;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            background-color: transparent;
+            box-shadow: none;
+            margin-left: 0;
+        }
+
+        .game-controls button:hover {
+            background-color: rgba(100, 149, 237, 0.3);
+            transform: scale(1.05);
+        }
+
+        .game-controls button:active {
+            transform: scale(1);
+        }
+
+        .fullscreen-button {
+            margin-left: 0; /* Removed auto margin */
+        }
+
+        .controls-button {
+            margin-right: 0;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                width: 98%;
+            }
+
+            .game-iframe {
+                height: 450px;
+            }
+
+            .game-controls button {
+                font-size: 0.9em;
+                padding: 6px 12px;
+            }
+        }
+
+        .game-controls button {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+        }
+
+        .game-controls button i {
+            margin-right: 0;
+            font-size: 1.2em;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .fullscreen-button i {
+            font-size: 1.2em;
+        }
+
+        .controls-button i {
+            font-size: 1.2em;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 2.2em;
+            text-align: center;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+        footer {
+            background-color: rgba(0, 0, 0, 0.8);
+            color: #fff;
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: #212233;
+            color: #F9FAFF;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid #444;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.7);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(-50px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        @keyframes fadeOut {
+            from {opacity: 1; transform: translateY(0);}
+            to {opacity: 0; transform: translateY(-50px);}
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #444;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+            color: #F9FAFF;
+        }
+
+        .close-button {
+            color: #888; /* Darker shade of gray */
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .close-button:hover,
+        .close-button:focus {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .modal-body {
+            padding: 10px 0;
+            line-height: 1.6;
+        }
+
+        .modal-body h3{
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #ddd;
+        }
+
+        .modal-body ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            margin-bottom: 20px;
+
+        }
+         .modal-body li{
+            margin-bottom: 5px;
+        }
+
+        .modal-footer {
+            padding-top: 15px;
+            border-top: 1px solid #444;
+            text-align: right;
+        }
+
+        .modal-footer button {
+            background-color: #5091EA;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-size: 1em;
+        }
+
+        .modal-footer button:hover {
+            background-color: #38679E;
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                width: 95%;
+                margin: 20px auto;
+            }
+        }
+
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@popperjs/core@2/dist/umd/popper.min.js"></script>
+    <script src="https://unpkg.com/tippy.js@6/dist/tippy-bundle.umd.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css" />
+    <style>
+        .tippy-box[data-theme~='game-controls'] {
+            background-color: #222;
+            color: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 0.9em;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid #444;
+            text-align: left;
+            line-height: 1.5;
+        }
+
+        .tippy-box[data-theme~='game-controls'] .tippy-arrow {
+            color: #222;
+        }
+    </style>
+</head>
+<body style="background-color: transparent;">
+
+    <div class="game-container" style="max-width: 1300px;">
+        <iframe class="game-iframe" id="game-frame" src="your_game_url_here" title="Your Game"></iframe>
+        <div class="game-controls">
+            <span class="game-title-name">Nexus Gaming</span>
+            <button class="controls-button" id="controls-button">
+                <i class="fas fa-gamepad"></i>
+            </button>
+            <button class="fullscreen-button" id="fullscreen-button">
+                <i class="fas fa-expand"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <div id="controls-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Game Controls</h2>
+                <span class="close-button" id="close-modal-button">&times;</span>
+            </div>
+            <div class="modal-body">
+                <h3>Basic Movement</h3>
+                <ul>
+                    <li><strong>W</strong>: Move Forward</li>
+                    <li><strong>A</strong>: Move Left</li>
+                    <li><strong>S</strong>: Move Backward</li>
+                    <li><strong>D</strong>: Move Right</li>
+                    <li><strong>Spacebar</strong>: Jump</li>
+                </ul>
+                <h3>Camera Controls</h3>
+                <ul>
+                    <li><strong>Mouse Movement</strong>: Look around</li>
+                </ul>
+                <h3>Combat</h3>
+                <ul>
+                    <li><strong>Left Mouse Button</strong>: Fire Weapon</li>
+                    <li><strong>R</strong>: Reload Weapon</li>
+                </ul>
+                <h3>Other</h3>
+                <ul>
+                    <li><strong>E</strong>: Interact</li>
+                    <li><strong>M</strong>: Open Map</li>
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button id="modal-ok-button">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const iframe = document.getElementById('game-frame');
+        const fullscreenButton = document.getElementById('fullscreen-button');
+        const controlsButton = document.getElementById('controls-button');
+        const controlsModal = document.getElementById('controls-modal');
+        const closeModalButton = document.getElementById('close-modal-button');
+        const modalOkButton = document.getElementById('modal-ok-button');
+
+
+        function toggleFullscreen() {
+            if (iframe) {
+                if (iframe.requestFullscreen) {
+                    iframe.requestFullscreen();
+                } else if (iframe.mozRequestFullScreen) {
+                    iframe.mozRequestFullScreen();
+                } else if (iframe.webkitRequestFullscreen) {
+                    iframe.webkitRequestFullscreen();
+                } else if (iframe.msRequestFullscreen) {
+                    iframe.msRequestFullscreen();
+                }
+            }
+        }
+
+        function showControls() {
+            controlsModal.style.display = "block";
+            controlsModal.style.animation = "fadeIn 0.3s";
+        }
+
+        function closeControlsModal() {
+            controlsModal.style.animation = "fadeOut 0.3s";
+            setTimeout(() => {
+                controlsModal.style.display = "none";
+            }, 300);
+        }
+
+
+        fullscreenButton.addEventListener('click', toggleFullscreen);
+        controlsButton.addEventListener('click', showControls);
+        closeModalButton.addEventListener('click', closeControlsModal);
+        modalOkButton.addEventListener('click', closeControlsModal);
+
+        window.addEventListener('click', (event) => {
+            if (event.target === controlsModal) {
+                closeControlsModal();
+            }
+        });
+
+
+        // Initialize Tooltips
+        tippy(fullscreenButton, {
+            content: 'Toggle Fullscreen',
+            theme: 'game-controls',
+            placement: 'top',
+            delay: [100, 200],
+        });
+
+        tippy(controlsButton, {
+            content: 'Show Controls',
+            theme: 'game-controls',
+            placement: 'top',
+            delay: [100, 200],
+        });
+    </script>
+</body>
+</html>
