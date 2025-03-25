@@ -34,20 +34,19 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.8);
         }
 
-        .game-iframe-container { /* New container for the iframe */
+        .game-iframe-container {
             width: 100%;
-            height: 650px; /* Default height */
+            height: 650px;
             border: none;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             background-color: #fff;
         }
 
-        .game-iframe { /* Applied to the iframe by JS */
+        .game-iframe {
             width: 100%;
             height: 100%;
             border: none;
         }
-
 
         .game-controls {
             display: flex;
@@ -361,17 +360,15 @@
 
 
         function toggleFullscreen() {
-            const iframe = gameIframeContainer.querySelector('iframe');
-            if (iframe) {
-                if (iframe.requestFullscreen) {
-                    iframe.requestFullscreen();
-                } else if (iframe.mozRequestFullScreen) {
-                    iframe.mozRequestFullScreen();
-                } else if (iframe.webkitRequestFullscreen) {
-                    iframe.webkitRequestFullscreen();
-                } else if (iframe.msRequestFullscreen) {
-                    iframe.msRequestFullscreen();
-                }
+            const container = document.querySelector('.game-container');
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.mozRequestFullScreen) {
+                container.mozRequestFullScreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
             }
         }
 
@@ -425,12 +422,12 @@
             const iframe = document.createElement('iframe');
             iframe.className = 'game-iframe';
             iframe.src = gameUrl;
-            iframe.title = gameTitle;  // Use the provided title
+            iframe.title = gameTitle;
             gameIframeContainer.appendChild(iframe);
 
             // Set the game title and description
             gameTitleNameElement.textContent = gameTitle;
-            gameDescriptionElement.innerHTML = gameDescription; // Use innerHTML for potential HTML content.
+            gameDescriptionElement.innerHTML = gameDescription;
 
             // Set Controls Modal Content
             controlsModalTitleElement.textContent = controlsTitle;
